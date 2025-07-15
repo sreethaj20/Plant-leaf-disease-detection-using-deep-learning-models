@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - LeafyAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        leafy: {
+                            light: '#8BC34A',
+                            DEFAULT: '#4CAF50',
+                            dark: '#2E7D32',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .login-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a472a, #388E3C);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .login-splash-content {
+            text-align: center;
+            color: white;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .key-animation {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+
+        .key-rotate {
+            animation: keyRotate 2s ease-in-out infinite;
+        }
+
+        .sparkles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        @keyframes keyRotate {
+            0% { transform: rotate(0deg) scale(1); opacity: 0.8; }
+            50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+            100% { transform: rotate(360deg) scale(1); opacity: 0.8; }
+        }
+
+        @keyframes sparkle {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
+            50% { filter: drop-shadow(0 0 20px rgba(255,255,255,0.9)); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .content-wrapper {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .content-wrapper.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-green-50 font-sans">
+    <!-- Login Splash Screen -->
+    <div class="login-splash" id="loginSplash">
+        <div class="login-splash-content">
+            <div class="key-animation">
+                <div class="sparkles"></div>
+                <svg class="key-rotate text-white w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                </svg>
+            </div>
+            <h2 class="text-3xl font-bold mb-2">Welcome Back!</h2>
+            <p class="text-xl opacity-80">
+                <span class="inline-block">Preparing your secure login</span>
+                <span class="dots-animation"></span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-wrapper" id="mainContent">
+        <header class="bg-gradient-to-r from-leafy-dark to-leafy text-white shadow-lg">
+            <div class="container mx-auto px-4 py-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                        <h1 class="text-3xl font-bold">LeafyAI</h1>
+                    </div>
+                    <nav>
+                        <ul class="flex gap-6">
+                            <li>
+                                <a href="{{ url_for('index') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    </svg>
+                                    <span>Home</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('predict') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                    </svg>
+                                    <span>Detect Disease</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('about') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>About</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('login') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                    </svg>
+                                    <span>Login</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('register') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                    </svg>
+                                    <span>Register</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-4 py-10">
+            <section class="max-w-md mx-auto">
+                <div class="bg-white rounded-lg shadow-lg p-8">
+                    <div class="text-center mb-6">
+                        <h2 class="text-3xl font-bold text-gray-800">Welcome Back</h2>
+                        <p class="text-gray-600 mt-2">Login to access your LeafyAI account</p>
+                    </div>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="flash-message flash-{{ category }} mb-6">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="{{ url_for('login') }}" class="space-y-6">
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                            <input type="text" id="username" name="username" required 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-leafy focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" id="password" name="password" required 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-leafy focus:border-transparent">
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-leafy border-gray-300 rounded">
+                                <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+                                    Remember me
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-leafy hover:bg-leafy-dark text-white font-medium py-3 px-4 rounded-md shadow transition duration-300">
+                            Sign in
+                        </button>
+                    </form>
+
+                    <div class="mt-6 text-center">
+                        <p class="text-gray-600">
+                            Don't have an account? 
+                            <a href="{{ url_for('register') }}" class="text-leafy hover:underline font-medium">
+                                Register now
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="bg-leafy-dark text-white py-8 mt-20"></footer>
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h2 class="text-2xl font-bold">LeafyAI</h2>
+                        <p class="text-green-100">Advanced Leaf disease detection</p>
+                    </div>
+                    <div>
+                        <p>&copy; 2025 LeafyAI. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginSplash = document.getElementById('loginSplash');
+            const mainContent = document.getElementById('mainContent');
+
+            // Add a small delay before starting the fade-out
+            setTimeout(() => {
+                loginSplash.style.transition = 'opacity 0.8s ease-out';
+                loginSplash.classList.add('fade-out');
+                mainContent.classList.add('visible');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

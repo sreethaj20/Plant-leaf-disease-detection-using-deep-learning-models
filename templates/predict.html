@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detect Leaf Disease - LeafyAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        leafy: {
+                            light: '#8BC34A',
+                            DEFAULT: '#4CAF50',
+                            dark: '#2E7D32',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .play-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            margin-top: 12px;
+        }
+
+        .play-button:hover {
+            background-color: #45a049;
+        }
+
+        .play-button.playing {
+            background-color: #f44336;
+        }
+
+        .play-button .icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-icon {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Add these new splash screen styles */
+        .predict-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a472a, #2E7D32);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .predict-splash-content {
+            text-align: center;
+            color: white;
+        }
+
+        .scan-animation {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 2rem;
+            position: relative;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background: #8BC34A;
+            animation: scan 2s linear infinite;
+            box-shadow: 0 0 12px #8BC34A;
+        }
+
+        .leaf-pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+        }
+
+        .predict-fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .predict-content {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .predict-content.visible {
+            opacity: 1;
+        }
+
+        .dots-animation::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body class="bg-green-50 font-sans">
+    <!-- Add Splash Screen -->
+    <div class="predict-splash" id="predictSplash">
+        <div class="predict-splash-content">
+            <div class="scan-animation">
+                <div class="scan-line"></div>
+                <div class="leaf-pulse">
+                    <svg class="w-16 h-16 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                </div>
+            </div>
+            <h2 class="text-3xl font-bold mb-4">LeafyAI Scanner</h2>
+            <p class="text-xl opacity-75 dots-animation">Initializing AI Detection System</p>
+        </div>
+    </div>
+
+    <!-- Wrap existing content in a div -->
+    <div class="predict-content" id="predictContent">
+        <header class="bg-gradient-to-r from-leafy-dark to-leafy text-white shadow-lg">
+            <div class="container mx-auto px-4 py-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                        <h1 class="text-3xl font-bold">LeafyAI</h1>
+                    </div>
+                    <nav>
+                        <ul class="flex gap-6">
+                            <li>
+                                <a href="{{ url_for('index') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    </svg>
+                                    <span>Home</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('predict') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                    </svg>
+                                    <span>Detect Disease</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('about') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>About</span>
+                                </a>
+                            </li>
+                            {% if session.username %}
+                                <li>
+                                    <a href="{{ url_for('logout') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                        </svg>
+                                        <span>Logout ({{ session.username }})</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a href="{{ url_for('login') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                        </svg>
+                                        <span>Login</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('register') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                        </svg>
+                                        <span>Register</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-4 py-10">
+            <section class="max-w-4xl mx-auto">
+                <h2 class="text-4xl font-bold text-gray-800 mb-6 text-center">Leaf Disease Detection</h2>
+                
+                <div class="bg-white p-8 rounded-xl shadow-md mb-8">
+                    <h3 class="text-2xl font-semibold mb-4">Upload Leaf Image</h3>
+                    <p class="text-gray-600 mb-6">Please upload images of leaves from Apple, Cherry, Corn, Grape, Peach, Pepper, Potato, Strawberry, or Tomato plants for best results.</p>
+                    
+                    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center" id="dropzone">
+                            <input type="file" name="leaf_image" id="leaf_image" accept="image/*" class="hidden">
+                            <label for="leaf_image" class="cursor-pointer">
+                                <div class="flex flex-col items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                    <p class="text-gray-500">Click to upload or drag and drop</p>
+                                    <p class="text-sm text-gray-400">JPG, PNG, JPEG</p>
+                                </div>
+                            </label>
+                            <div id="preview" class="mt-4 hidden">
+                                <img id="image-preview" src="" alt="Preview" class="max-h-64 mx-auto">
+                                <p id="file-name" class="text-sm text-gray-500 mt-2"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="bg-leafy hover:bg-leafy-dark text-white font-bold py-3 px-8 rounded-full shadow-md transform transition hover:scale-105">
+                                Detect Disease
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Results Area -->
+                {% if prediction %}
+                <div class="bg-white p-8 rounded-xl shadow-md">
+                    <h3 class="text-2xl font-semibold mb-4">Detection Results</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            {% if image_data %}
+                            <img src="{{ image_data }}" alt="Uploaded Leaf" class="max-w-full rounded-lg shadow-md">
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            {% if prediction.success %}
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+                                <h4 class="text-xl font-medium text-gray-800 mb-2">Detected Disease:</h4>
+                                <p class="text-2xl font-bold text-leafy-dark mb-3">{{ prediction.disease }}</p>
+                                <p class="text-gray-600 mb-4">Confidence: {{ prediction.confidence|round(2) }}%</p>
+                                
+                                <div id="analysis-section">
+                                    <button id="analyze-btn" onclick="getAIAnalysis()" class="w-full bg-leafy hover:bg-leafy-dark text-white font-bold py-3 px-6 rounded-lg shadow transform transition hover:scale-105">
+                                        Get Detailed Analysis
+                                    </button>
+                                    <div id="loading" class="hidden text-center py-4">
+                                        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-leafy mx-auto"></div>
+                                        <p class="text-gray-600 mt-2">Analyzing disease...</p>
+                                    </div>
+                                    <div id="analysis-result" class="hidden mt-6 p-4 bg-gray-50 rounded-lg max-h-[500px] overflow-y-auto custom-scrollbar">
+                                        <!-- Content will be added here dynamically -->
+                                        <button id="ttsButton" class="play-button mt-4">
+                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                            </svg>
+                                            <span class="button-text">Read Analysis</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                                <h4 class="text-xl font-medium text-gray-800 mb-2">Detection Failed</h4>
+                                <p class="text-gray-700">{{ prediction.message }}</p>
+                                <p class="text-sm text-gray-500 mt-2">Confidence: {{ prediction.confidence|round(2) }}%</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </section>
+        </main>
+
+        <footer class="bg-leafy-dark text-white py-8 mt-20">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h2 class="text-2xl font-bold">LeafyAI</h2>
+                        <p class="text-green-100">Advanced Leaf disease detection</p>
+                    </div>
+                    <div>
+                        <p>&copy; 2025 LeafyAI. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Add this at the beginning of your scripts
+        document.addEventListener('DOMContentLoaded', () => {
+            const predictSplash = document.getElementById('predictSplash');
+            const predictContent = document.getElementById('predictContent');
+
+            // Hide splash screen and show main content after animation
+            setTimeout(() => {
+                predictSplash.classList.add('predict-fade-out');
+                predictContent.classList.add('visible');
+            }, 2000); // Wait for 2 seconds
+        });
+
+        // File upload preview
+        const fileInput = document.getElementById('leaf_image');
+        const preview = document.getElementById('preview');
+        const imagePreview = document.getElementById('image-preview');
+        const fileName = document.getElementById('file-name');
+        const dropzone = document.getElementById('dropzone');
+
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.classList.remove('hidden');
+                    imagePreview.src = e.target.result;
+                    fileName.textContent = file.name;
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropzone.classList.add('bg-green-50', 'border-leafy');
+        }
+
+        function unhighlight() {
+            dropzone.classList.remove('bg-green-50', 'border-leafy');
+        }
+
+        dropzone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files && files.length) {
+                fileInput.files = files;
+                const file = files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.classList.remove('hidden');
+                    imagePreview.src = e.target.result;
+                    fileName.textContent = file.name;
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // AI Analysis functionality with scroll handling
+        function getAIAnalysis() {
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const loadingDiv = document.getElementById('loading');
+            const resultDiv = document.getElementById('analysis-result');
+            
+            // Show loading, hide button
+            analyzeBtn.classList.add('hidden');
+            loadingDiv.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            
+            // Add debug console log
+            console.log("Sending analyze request...");
+            
+            // Get the image data and disease name
+            const imageElement = document.querySelector('img[alt="Uploaded Leaf"]');
+            const diseaseElement = document.querySelector('.text-2xl.font-bold.text-leafy-dark');
+            
+            if (!imageElement || !diseaseElement) {
+                resultDiv.innerHTML = '<p class="text-red-500">Error: Image or disease information not found</p>';
+                return;
+            }
+            
+            const imageData = imageElement.src;
+            const diseaseName = diseaseElement.textContent;
+            
+            // Make AJAX request to analyze endpoint with the data
+            fetch('/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    disease: diseaseName,
+                    image_data: imageData
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadingDiv.classList.add('hidden');
+                resultDiv.classList.remove('hidden');
+                
+                if (data.success) {
+                    if (typeof marked !== 'undefined') {
+                        resultDiv.innerHTML = marked.parse(data.analysis);
+                        // Add TTS button after content
+                        resultDiv.innerHTML += `
+                            <button id="ttsButton" class="play-button mt-4">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                                <span class="button-text">Read Analysis</span>
+                            </button>
+                        `;
+                        setupTTSButton();
+                    } else {
+                        resultDiv.innerHTML = `<pre>${data.analysis}</pre>`;
+                    }
+                } else {
+                    resultDiv.innerHTML = `<p class="text-red-500">Error: ${data.error}</p>`;
+                    analyzeBtn.classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                console.error("Error during fetch:", error);
+                loadingDiv.classList.add('hidden');
+                resultDiv.classList.remove('hidden');
+                resultDiv.innerHTML = `<p class="text-red-500">Error connecting to server: ${error.message}</p>`;
+                analyzeBtn.classList.remove('hidden');
+            });
+        }
+
+        // Add this to your existing JavaScript
+        let speechSynthesis = window.speechSynthesis;
+        let utterance = null;
+        let isPlaying = false;
+        let voices = [];
+
+        // Function to get female voice
+        function getFemaleVoice() {
+            // Priority list of common female voice names
+            const femaleKeywords = ['female', 'woman', 'girl', 'microsoft zira', 'samantha', 'victoria'];
+            
+            // Get all available voices
+            const availableVoices = speechSynthesis.getVoices();
+            
+            // Log available voices for debugging
+            console.log('Available voices:', availableVoices.map(v => v.name));
+            
+            // First try to find voices with 'female' in name
+            let femaleVoice = availableVoices.find(voice => 
+                femaleKeywords.some(keyword => 
+                    voice.name.toLowerCase().includes(keyword)
+                )
+            );
+            
+            // If no female voice found, try to find any en-US or en-GB voice
+            if (!femaleVoice) {
+                femaleVoice = availableVoices.find(voice => 
+                    voice.lang.startsWith('en')
+                );
+            }
+            
+            // If still no voice found, use the first available voice
+            return femaleVoice || availableVoices[0];
+        }
+
+        function startSpeech() {
+            // Cancel any existing speech
+            stopSpeech();
+            
+            const analysisContent = document.getElementById('analysis-result').textContent;
+            utterance = new SpeechSynthesisUtterance(analysisContent);
+            
+            // Set voice properties
+            utterance.rate = 1.0;
+            utterance.pitch = 1.2;
+            
+            // Get and set female voice
+            const voices = speechSynthesis.getVoices();
+            const femaleVoice = voices.find(voice => 
+                voice.name.toLowerCase().includes('female') || 
+                voice.name.toLowerCase().includes('zira') ||
+                voice.name.toLowerCase().includes('samantha')
+            );
+            
+            if (femaleVoice) {
+                console.log('Using voice:', femaleVoice.name);
+                utterance.voice = femaleVoice;
+            }
+
+            utterance.onend = function() {
+                console.log('Speech ended');
+                isPlaying = false;
+                updateButtonState();
+            };
+
+            utterance.onerror = function(event) {
+                console.error('Speech synthesis error:', event);
+                isPlaying = false;
+                updateButtonState();
+            };
+
+            try {
+                speechSynthesis.speak(utterance);
+                isPlaying = true;
+                console.log('Started speaking');
+            } catch (error) {
+                console.error('Error starting speech:', error);
+                isPlaying = false;
+                updateButtonState();
+            }
+        }
+
+        function stopSpeech() {
+            try {
+                speechSynthesis.cancel();
+                isPlaying = false;
+                console.log('Speech stopped');
+            } catch (error) {
+                console.error('Error stopping speech:', error);
+            }
+            updateButtonState();
+        }
+
+        function updateButtonState() {
+            const ttsButton = document.getElementById('ttsButton');
+            if (!ttsButton) return;
+
+            const buttonText = ttsButton.querySelector('.button-text');
+            const icon = ttsButton.querySelector('.icon');
+
+            if (isPlaying) {
+                ttsButton.classList.add('playing');
+                buttonText.textContent = 'Stop Reading';
+                icon.innerHTML = '<rect x="4" y="4" width="16" height="16"></rect>';
+            } else {
+                ttsButton.classList.remove('playing');
+                buttonText.textContent = 'Read Analysis';
+                icon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+            }
+        }
+
+        function toggleSpeech() {
+            if (isPlaying) {
+                stopSpeech();
+            } else {
+                startSpeech();
+            }
+            updateButtonState();
+        }
+
+        // Update the setupTTSButton function
+        function setupTTSButton() {
+            const ttsButton = document.getElementById('ttsButton');
+            if (!ttsButton) return;
+            
+            ttsButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleSpeech();
+            });
+        }
+
+        // Initialize voices and update when they change
+        speechSynthesis.onvoiceschanged = function() {
+            voices = speechSynthesis.getVoices();
+            console.log("Voices loaded:", voices.length);
+            
+            // Log available female voices
+            const femaleVoice = getFemaleVoice();
+            if (femaleVoice) {
+                console.log('Selected female voice:', femaleVoice.name);
+            }
+        };
+
+        // Force voice list refresh
+        setTimeout(() => {
+            speechSynthesis.getVoices();
+        }, 100);
+
+        // Initialize voices
+        speechSynthesis.onvoiceschanged = function() {
+            const voices = speechSynthesis.getVoices();
+            console.log("Available voices loaded:", voices.length);
+        };
+    </script>
+    <!-- Add marked.js for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>

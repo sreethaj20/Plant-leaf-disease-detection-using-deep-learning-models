@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - LeafyAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        leafy: {
+                            light: '#8BC34A',
+                            DEFAULT: '#4CAF50',
+                            dark: '#2E7D32',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-green-50 font-sans">
+    <header class="bg-gradient-to-r from-leafy-dark to-leafy text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                    <h1 class="text-3xl font-bold">LeafyAI</h1>
+                </div>
+                <nav>
+                    <ul class="flex gap-6">
+                        <li><a href="{{ url_for('index') }}" class="font-semibold hover:underline">Home</a></li>
+                        <li><a href="{{ url_for('predict') }}" class="font-semibold hover:underline">Detect Disease</a></li>
+                        <li><a href="{{ url_for('about') }}" class="font-semibold hover:underline">About</a></li>
+                        {% if session.username %}
+                            <li><a href="{{ url_for('logout') }}" class="font-semibold hover:underline">Logout ({{ session.username }})</a></li>
+                        {% else %}
+                            <li><a href="{{ url_for('login') }}" class="font-semibold hover:underline">Login</a></li>
+                            <li><a href="{{ url_for('register') }}" class="font-semibold hover:underline">Register</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-16">
+        <div class="max-w-xl mx-auto text-center">
+            <h1 class="text-9xl font-bold text-leafy">404</h1>
+            <h2 class="text-3xl font-semibold text-gray-800 mt-4">Page Not Found</h2>
+            <p class="text-gray-600 mt-4 mb-8">
+                Oops! The page you are looking for seems to have withered away.
+            </p>
+            
+            <div class="mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mx-auto text-leafy-light opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+            </div>
+            
+            <a href="{{ url_for('index') }}" class="inline-block bg-leafy hover:bg-leafy-dark text-white font-semibold py-3 px-8 rounded-full shadow-md transition duration-300">
+                Return to Homepage
+            </a>
+        </div>
+    </main>
+
+    <footer class="bg-leafy-dark text-white py-8 mt-20">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h2 class="text-2xl font-bold">LeafyAI</h2>
+                    <p class="text-green-100">Advanced plant disease detection</p>
+                </div>
+                <div>
+                    <p>&copy; 2025 LeafyAI. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

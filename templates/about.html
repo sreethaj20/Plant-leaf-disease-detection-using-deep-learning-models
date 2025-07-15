@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - LeafyAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        leafy: {
+                            light: '#8BC34A',
+                            DEFAULT: '#4CAF50',
+                            dark: '#2E7D32',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* About page specific splash screen */
+        .about-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #1b5e20, #4CAF50);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .about-splash-content {
+            position: relative;
+            text-align: center;
+            color: white;
+        }
+
+        .dna-animation {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem;
+        }
+
+        .dna-strand {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            animation: dnaRotate 4s linear infinite;
+        }
+
+        .dna-circle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #8BC34A;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #8BC34A;
+        }
+
+        @keyframes dnaRotate {
+            0% { transform: rotateY(0deg) rotateX(45deg); }
+            100% { transform: rotateY(360deg) rotateX(45deg); }
+        }
+
+        .fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .main-content {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .main-content.visible {
+            opacity: 1;
+        }
+
+        /* Create DNA helix effect with multiple circles */
+        .dna-strand::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            animation: dnaGlow 2s ease-in-out infinite;
+            background: radial-gradient(circle, rgba(139, 195, 74, 0.2) 0%, rgba(139, 195, 74, 0) 70%);
+        }
+
+        @keyframes dnaGlow {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-green-50 font-sans">
+    <!-- About Page Splash Screen -->
+    <div class="about-splash" id="aboutSplash">
+        <div class="about-splash-content">
+            <div class="dna-animation">
+                <!-- Generate DNA helix circles dynamically -->
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const dnaAnimation = document.querySelector('.dna-animation');
+                        for(let i = 0; i < 20; i++) {
+                            const strand = document.createElement('div');
+                            strand.className = 'dna-strand';
+                            const circle = document.createElement('div');
+                            circle.className = 'dna-circle';
+                            circle.style.top = `${i * 10}%`;
+                            circle.style.left = `${50 + Math.sin(i * 0.5) * 30}%`;
+                            strand.appendChild(circle);
+                            dnaAnimation.appendChild(strand);
+                        }
+                    });
+                </script>
+            </div>
+            <h2 class="text-4xl font-bold mb-4">Discovering Nature's Patterns</h2>
+            <p class="text-xl opacity-80">Loading LeafyAI Knowledge Base...</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <header class="bg-gradient-to-r from-leafy-dark to-leafy text-white shadow-lg">
+            <div class="container mx-auto px-4 py-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                        <h1 class="text-3xl font-bold">LeafyAI</h1>
+                    </div>
+                    <nav>
+                        <ul class="flex gap-6">
+                            <li>
+                                <a href="{{ url_for('index') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    </svg>
+                                    <span>Home</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('predict') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                    </svg>
+                                    <span>Detect Disease</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('about') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>About</span>
+                                </a>
+                            </li>
+                            {% if session.username %}
+                                <li>
+                                    <a href="{{ url_for('logout') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                        </svg>
+                                        <span>Logout ({{ session.username }})</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a href="{{ url_for('login') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                        </svg>
+                                        <span>Login</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('register') }}" class="font-semibold hover:underline flex items-center gap-2">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                        </svg>
+                                        <span>Register</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-4 py-10">
+            <!-- Hero Section -->
+            <section class="text-center mb-16"> 
+                <h1 class="text-5xl font-bold text-gray-800 mb-4">About LeafyAI</h1>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Empowering farmers and gardeners with ML | DL | LLM's plant disease detection technology to improve crop health and productivity.
+                </p>
+                <div class="mt-8">
+                    <div class="inline-block relative animate-bounce">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-leafy" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Our Mission -->
+            <section class="max-w-6xl mx-auto mb-20">
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:scale-[1.01] transition-transform duration-300">
+                    <div class="md:flex">
+                        <div class="md:w-1/2">
+                            <img src="https://www.hdwallpapers.in/thumbs/2011/green_leaf-t2.jpg" 
+                                 alt="Healthy Leafs" class="h-full w-full object-cover">
+                        </div>
+                        <div class="p-8 md:p-12 md:w-1/2 flex flex-col justify-center">
+                            <h2 class="text-3xl font-bold text-leafy-dark mb-6">Our Mission</h2>
+                            <p class="text-gray-700 mb-6 text-lg">
+                                LeafyAI was founded with a simple yet powerful mission: to make advanced plant disease detection 
+                                technology accessible to everyone. Early detection of plant diseases is critical for sustainable 
+                                agriculture and food security worldwide.
+                            </p>
+                            <p class="text-gray-700 text-lg">
+                                By combining cutting-edge deep learning with user-friendly interfaces, we aim to help farmers, 
+                                gardeners, and agricultural professionals identify and treat plant diseases efficiently, 
+                                reducing crop losses and chemical use while increasing yields.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How It Works -->
+            <section class="mb-20">
+                <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">How LeafyAI Works</h2>
+                
+                <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Step 1 -->
+                    <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
+                        <div class="bg-leafy p-6">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto">
+                                <span class="text-2xl font-bold text-leafy">1</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Upload Leaf Image</h3>
+                            <p class="text-gray-600">
+                                Simply take a photo of the affected plant leaf using your smartphone or camera 
+                                and upload it to our secure platform. We support various image formats for your convenience.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2 -->
+                    <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
+                        <div class="bg-leafy p-6">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto">
+                                <span class="text-2xl font-bold text-leafy">2</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">ML | DL | LLM's  Analysis</h3>
+                            <p class="text-gray-600">
+                                Our advanced deep learning model processes the image to identify patterns and symptoms 
+                                associated with various leaf diseases. The model has been trained on thousands of 
+                                labeled leaf disease images.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3 -->
+                    <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden">
+                        <div class="bg-leafy p-6">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto">
+                                <span class="text-2xl font-bold text-leafy">3</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Get Results & Treatment</h3>
+                            <p class="text-gray-600">
+                                Receive detailed analysis of the detected disease, including severity assessment, 
+                                treatment recommendations, and preventive measures to protect your plants and crops.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Technology Behind -->
+            <section class="mb-20 max-w-6xl mx-auto">
+                <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Technology Behind LeafyAI</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <!-- Flip Card 1: Deep Learning -->
+                    <div class="flip-card h-80 perspective-1000">
+                        <div class="flip-card-inner relative w-full h-full transition-transform duration-700 transform-style-preserve-3d hover:rotate-y-180">
+                            <!-- Front -->
+                            <div class="flip-card-front absolute w-full h-full bg-gradient-to-br from-leafy to-leafy-dark rounded-xl shadow-xl p-8 flex flex-col items-center justify-center text-white backface-hidden">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                </svg>
+                                <h3 class="text-2xl font-bold mb-2">Deep Learning Model</h3>
+                                <p class="text-center">Flip to learn more</p>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back absolute w-full h-full bg-white rounded-xl shadow-xl p-8 flex flex-col backface-hidden rotate-y-180">
+                                <h3 class="text-2xl font-bold mb-4 text-leafy-dark">Deep Learning Model</h3>
+                                <p class="text-gray-700 flex-grow">
+                                    Our core detection system uses a convolutional neural network (CNN) trained on over 87,000 
+                                    images of healthy and diseased plant leaves across 38 different classes. The model achieves 
+                                    a remarkable 96.5% accuracy in identifying plant diseases from images.
+                                </p>
+                                <p class="text-sm text-gray-500 mt-3">Technologies: TensorFlow, Keras, CNN architectures</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Flip Card 2: AI Analysis -->
+                    <div class="flip-card h-80 perspective-1000">
+                        <div class="flip-card-inner relative w-full h-full transition-transform duration-700 transform-style-preserve-3d hover:rotate-y-180">
+                            <!-- Front -->
+                            <div class="flip-card-front absolute w-full h-full bg-gradient-to-br from-green-500 to-green-700 rounded-xl shadow-xl p-8 flex flex-col items-center justify-center text-white backface-hidden">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                                </svg>
+                                <h3 class="text-2xl font-bold mb-2">LLM's Integration</h3>
+                                <p class="text-center">Flip to learn more</p>
+                            </div>
+                            <!-- Back -->
+                            <div class="flip-card-back absolute w-full h-full bg-white rounded-xl shadow-xl p-8 flex flex-col backface-hidden rotate-y-180">
+                                <h3 class="text-2xl font-bold mb-4 text-leafy-dark">LLM's Integration</h3>
+                                <p class="text-gray-700 flex-grow">
+                                    Once a disease is identified, we use Multimodal LLM"s to provide 
+                                    comprehensive analysis and treatment recommendations. This gives users practical,
+                                    expert-level advice on managing the detected plant disease with both organic and 
+                                    conventional approaches.
+                                </p>
+                                <p class="text-sm text-gray-500 mt-3">Technologies: LLM's Phi Agent, DuckDuckGo search integration</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+           <!-- Supported Plants -->
+    <section class="mb-20">
+        <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Supported Leaf Species</h2>
+        
+        <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group">
+                <div class="h-32 bg-green-100 flex items-center justify-center overflow-hidden">
+                    <span class="text-4xl">🍎</span>
+                </div>
+                <div class="p-4 text-center">
+                    <h3 class="font-bold text-gray-800">Apple</h3>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group">
+                <div class="h-32 bg-green-100 flex items-center justify-center overflow-hidden">
+                    <span class="text-4xl">🍒</span>
+                </div>
+                <div class="p-4 text-center">
+                    <h3 class="font-bold text-gray-800">Cherry</h3>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group">
+                <div class="h-32 bg-green-100 flex items-center justify-center overflow-hidden">
+                    <span class="text-4xl">🌽</span>
+                </div>
+                <div class="p-4 text-center">
+                    <h3 class="font-bold text-gray-800">Corn</h3>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group">
+                <div class="h-32 bg-green-100 flex items-center justify-center overflow-hidden">
+                    <span class="text-4xl">🍇</span>
+                </div>
+                <div class="p-4 text-center">
+                    <h3 class="font-bold text-gray-800">Grape</h3>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group">
+                <div class="h-32 bg-green-100 flex items-center justify-center overflow-hidden">
+                    <span class="text-4xl">🍑</h3>
+                </div>
+                <div class="p-4 text-center">
+                    <h3 class="font-bold text-gray-800">Peach</h3>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group">
+                <div class="h-32 bg-green-100 flex items-center justify-center overflow-hidden">
+                    <i class="fas fa-pepper-hot text-5xl text-red-500"></i>
+                </div>
+                <div class="p-4 text-center">
+                    <h3 class="font-bold text-gray-800">Pepper</h3>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group">
+                <div class="h-32 bg-green-100 flex items-center justify-center overflow-hidden">
+                    <span class="text-4xl">🥔</span>
+                </div>
+                <div class="p-4 text-center">
+                    <h3 class="font-bold text-gray-800">Potato</h3>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group">
+                <div class="h-32 bg-green-100 flex items-center justify-center overflow-hidden">
+                    <span class="text-4xl">🍓</span>
+                </div>
+                <div class="p-4 text-center">
+                    <h3 class="font-bold text-gray-800">Strawberry</h3>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden group">
+                <div class="h-32 bg-green-100 flex items-center justify-center overflow-hidden">
+                    <span class="text-4xl">🍅</span>
+                </div>
+                <div class="p-4 text-center">
+                    <h3 class="font-bold text-gray-800">Tomato</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Team -->
+<section class="mb-20">
+    <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Our Team</h2>
+    
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Team Member 1 -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:-translate-y-2">
+            <div class="h-48 bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="p-6 text-center">
+                <h3 class="font-bold text-lg mb-1">Raj Sharma</h3>
+                <p class="text-gray-500 text-sm mb-3">Plant Pathologist</p>
+                <p class="text-gray-600 text-sm">
+                    Expert in identifying and treating plant diseases with over 15 years of research experience.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Team Member 2 -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:-translate-y-2">
+            <div class="h-48 bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="p-6 text-center">
+                <h3 class="font-bold text-lg mb-1">Abhi Sharma</h3>
+                <p class="text-gray-500 text-sm mb-3">LLM's Expert</p>
+                <p class="text-gray-600 text-sm">
+                    Machine learning specialist with expertise in computer vision and deep learning architectures.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Team Member 3 -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:-translate-y-2">
+            <div class="h-48 bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="p-6 text-center">
+                <h3 class="font-bold text-lg mb-1">Tripti Sharma</h3>
+                <p class="text-gray-500 text-sm mb-3">Agricultural Scientist</p>
+                <p class="text-gray-600 text-sm">
+                    Specializes in sustainable farming practices and ecological plant disease management.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+            <!-- FAQ -->
+            <section class="max-w-4xl mx-auto mb-20">
+                <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">Frequently Asked Questions</h2>
+                
+                <div class="space-y-6">
+                    <!-- FAQ Item 1 -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="faq-toggle w-full text-left p-6 focus:outline-none">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-semibold text-gray-800">How accurate is the disease detection?</h3>
+                                <svg class="faq-arrow h-6 w-6 text-leafy transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                Our model has achieved 96.5% accuracy on our test dataset. However, the accuracy may vary 
+                                depending on image quality, lighting conditions, and whether the disease is in early or late stages. 
+                                For best results, we recommend taking clear, well-lit photos that focus on the affected areas of the plant.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 2 -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="faq-toggle w-full text-left p-6 focus:outline-none">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-semibold text-gray-800">Which plant diseases can be detected?</h3>
+                                <svg class="faq-arrow h-6 w-6 text-leafy transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                We can detect over 30 different plant diseases across 9 plant species, including apple scab, 
+                                black rot, cedar apple rust, powdery mildew, corn leaf spots, grape black rot, potato early and late blight, 
+                                tomato mosaic virus, and many more. We're continuously expanding our database to include more plant species and diseases.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 3 -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="faq-toggle w-full text-left p-6 focus:outline-none">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-semibold text-gray-800">Is my data kept private?</h3>
+                                <svg class="faq-arrow h-6 w-6 text-leafy transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">
+                                Yes, we take privacy seriously. Uploaded images are used only for disease detection and 
+                                are not shared with third parties. We may anonymously store images to improve our model's accuracy, 
+                                but you can opt out of this in your account settings. For more details, please see our privacy policy.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Us -->
+            <section class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                    <div class="md:flex">
+                        <div class="md:w-1/2 bg-gradient-to-br from-leafy to-leafy-dark p-8 md:p-12 text-white flex flex-col justify-center">
+                            <h2 class="text-3xl font-bold mb-6">Get In Touch</h2>
+                            <p class="mb-6 text-green-50">
+                                Have questions about LeafyAI or need assistance? We're here to help! Contact our team for support,
+                                feedback, or partnership inquiries.
+                            </p>
+                            <ul class="space-y-4">
+                                <li class="flex items-center gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M14.243 5.757a6 6 0 10-.986 9.284 1 1 0 111.087 1.678A8 8 0 1118 10a3 3 0 01-4.8 2.401A4 4 0 1114 10a1 1 0 102 0c0-1.537-.586-3.07-1.757-4.243zM12 10a2 2 0 10-4 0 2 2 0 004 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>support@leafyai</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm14 1a1 1 0 11-2 0 1 1 0 012 0zM2 9.5V14h16V9.5l-8 4-8-4zm16-4.5l-8 4-8-4V5a1 1 0 011-1h14a1 1 0 011 1v.5z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>Delhi, India</span>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                                    </svg>
+                                    <span>+91 76309-121XX</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="md:w-1/2 p-8 md:p-12">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6">Send Us a Message</h3>
+                            <form class="space-y-4">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                    <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-leafy focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-leafy focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                                    <textarea id="message" name="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-leafy focus:border-transparent"></textarea>
+                                </div>
+                                <button type="submit" class="bg-leafy hover:bg-leafy-dark text-white font-bold py-2 px-6 rounded-full shadow-md transform transition hover:scale-105">
+                                    Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="bg-leafy-dark text-white py-8 mt-20">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h2 class="text-2xl font-bold">LeafyAI</h2>
+                        <p class="text-green-100">Advanced plant disease detection</p>
+                    </div>
+                    <div>
+                        <p>&copy; 2025 LeafyAI. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Flip card functionality - Add 3D effect CSS classes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add necessary CSS classes for 3D transforms
+            const style = document.createElement('style');
+            style.textContent = `
+                .perspective-1000 {
+                    perspective: 1000px;
+                }
+                .transform-style-preserve-3d {
+                    transform-style: preserve-3d;
+                }
+                .backface-hidden {
+                    backface-visibility: hidden;
+                }
+                .rotate-y-180 {
+                    transform: rotateY(180deg);
+                }
+            `;
+            document.head.appendChild(style);
+
+            // FAQ toggle functionality
+            const faqToggles = document.querySelectorAll('.faq-toggle');
+            
+            faqToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const content = toggle.nextElementSibling;
+                    const arrow = toggle.querySelector('.faq-arrow');
+                    
+                    // Toggle the content visibility
+                    if(content.classList.contains('hidden')) {
+                        content.classList.remove('hidden');
+                        arrow.classList.add('rotate-180');
+                    } else {
+                        content.classList.add('hidden');
+                        arrow.classList.remove('rotate-180');
+                    }
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const aboutSplash = document.getElementById('aboutSplash');
+            const mainContent = document.getElementById('mainContent');
+
+            // Hide splash screen and show main content after animation
+            setTimeout(() => {
+                aboutSplash.classList.add('fade-out');
+                mainContent.classList.add('visible');
+            }, 3000); // Wait for 3 seconds
+        });
+    </script>
+</body>
+</html>

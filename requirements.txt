@@ -1,0 +1,9 @@
+Flask
+werkzeug
+pillow
+numpy
+opencv-python
+tensorflow
+keras
+phi
+duckduckgo-search
